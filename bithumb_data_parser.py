@@ -3,6 +3,7 @@ import openpyxl
 import os
 
 class BithumbParser():
+
     def __init__(self):
         interval_list = ['24h', '12h', '6h', '1h', '30m', '10m', '5m', '3m', '1m']
         tickers = pybithumb.get_tickers()
@@ -37,4 +38,3 @@ class BithumbParser():
                 self.get_candlestick(ticker, interval, retry_cnt)
             else:
                 print("Parsing skipped... " + str(retry_cnt) + " of " + str(ticker) + "_candlestick_" + str(interval))
-

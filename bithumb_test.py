@@ -3,10 +3,11 @@ from PyQt5 import uic
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+from binance_test import *
 import pykorbit
 import pybithumb
 import time
-import datetime
+# import datetime
 
 # This is a sample Python script.
 
@@ -15,6 +16,10 @@ import datetime
 
 form_class_old = uic.loadUiType("ui/1stDesign.ui")[0]
 form_class_bull = uic.loadUiType("ui/bull.ui")[0]
+form_class_myscreen = uic.loadUiType("ui/myScreen_01.ui")[0]
+tickers = ["BTC", "ETH", "BCH", "ETC"]
+
+api_parse_cnt = 0
 
 class MyWindowBull(QMainWindow, form_class_bull):
     def __init__(self):
@@ -128,17 +133,33 @@ class MyWindowThread(QMainWindow, form_class_bull):
         except:
             pass
 
-class MyWindow(QMainWindow, form_class_bull):
-    def __init__(self):
+class MyWindow_new(QMainWindow, form_class_myscreen):
+    def __init__(self, tickers):
         super().__init__()
         self.setupUi(self)
 
-        self.tableWidget.setRowCount(len(tickers))
-        self.worker = Worker()
+        # btn = QPushButton("pushButton_01", self)      # UI에 내용 덮어씀
+        # btn.move(10, 10)
+        # btn.clicked.connect(self.btn_clicked)
+
+        # btn = QPushButton("pushButton_01", self)
+
+        # self.tableWidget.setRowCount(len(tickers))
+        self.worker = Worker2(tickers)
         self.worker.finished.connect(self.update_table_widget)
         self.worker.start()
 
-    @pyqtSlot(dict)
+        self.pushButton_01.clicked.connect(self.btn_clicked)
+
+    def btn_clicked(self):
+        print("버튼 클릭")
+        # self.tableWidget.setItem(6, 1, QTableWidgetItem(str(binance_test.read_wallet)))
+        binance_test = BinanceAPI()
+        balance = binance_test.read_wallet_spot()
+        self.tableWidget.setItem(6, 0, QTableWidgetItem(str(balance['BTC']['total'])))
+
+
+    # @pyqtSlot(dict)
     def update_table_widget(self, data):
         try:
             for ticker, infos in data.items():
@@ -163,6 +184,12 @@ class MySignal(QObject):
 class BithumbAPI():
     def __init__(self):
         pass
+
+    def parse_ohlcv(self, ticker, payment_currency="KRW", interval="day"):
+        return pybithumb.get_ohlcv(ticker, payment_currency, interval)
+
+    def parse_current_price(self, ticker):
+        return pybithumb.get_current_price(ticker)
 
     def parse_detail(self):
         tickers = pybithumb.get_tickers()
@@ -215,44 +242,50 @@ class BithumbAPI():
 
         return price, last_ma5, state
 
-# class Worker(QThread):
-#     def __init__(self, tickers):
-#         super().__init__()
-#         self.finished = pyqtSignal(dict)        # 사용자 정의 시그널(이벤트) 객체 생성
-#         self.tickers = tickers
-#
-#     def run(self):
-#         while True:
-#             data = {}
-#
-#             for ticker in self.tickers:
-#                 data[ticker] = self.get_market_infos(ticker)
-#
-#             self.finished.emit(data)
-#             # print(data)
-#             time.sleep(1)
-#
-#     def get_market_infos(self, ticker):
-#         try:
-#             df = pybithumb.get_ohlcv(ticker)
-#             ma5 = df['close'].rolling(window=5).mean()
-#             last_ma5 = ma5[-2]
-#             price = pybithumb.get_current_price(ticker)
-#
-#             state = None
-#             if price > last_ma5:
-#                 state = "상승장"
-#             else:
-#                 state = "하락장"
-#             return price, last_ma5, state
-#         except:
-#             return None, None, None
-
-tickers = ["BTC", "ETH", "BCH", "ETC"]
-form_class_bull = uic.loadUiType("ui/bull.ui")[0]
-
 class Worker(QThread):
+    
     finished = pyqtSignal(dict)
+
+    def __init__(self, tickers):
+        super().__init__()
+        # self.finished = pyqtSignal(dict)        # 사용자 정의 시그널(이벤트) 객체 생성
+        self.tickers = tickers
+
+    def run(self):
+        while True:
+            data = {}
+
+            for ticker in self.tickers:
+                data[ticker] = self.get_market_infos(ticker)
+
+            self.finished.emit(data)
+            # print(data)
+            time.sleep(1)
+
+    def get_market_infos(self, ticker):
+        try:
+            df = pybithumb.get_ohlcv(ticker)
+            ma5 = df['close'].rolling(window=5).mean()
+            last_ma5 = ma5[-2]
+            price = pybithumb.get_current_price(ticker)
+
+            state = None
+            if price > last_ma5:
+                state = "상승장"
+            else:
+                state = "하락장"
+            return price, last_ma5, state
+        except:
+            return None, None, None
+
+class Worker2(QThread):
+
+    finished = pyqtSignal(dict)
+
+    def __init__(self, tickers):
+        super().__init__()
+        # self.finished = pyqtSignal(dict)
+        self.tickers = tickers
 
     def run(self):
         while True:
@@ -268,9 +301,8 @@ class Worker(QThread):
         try:
             df = pybithumb.get_ohlcv(ticker)
             ma5 = df['close'].rolling(window=5).mean()
-
-            price = pybithumb.get_current_price(ticker)
             last_ma5 = ma5[-2]
+            price = pybithumb.get_current_price(ticker)
 
             state = None
             if price > last_ma5:
@@ -278,28 +310,6 @@ class Worker(QThread):
             else:
                 state = "하락장"
 
-            return (price, last_ma5, state)
+            return price, last_ma5, state
         except:
-            return (None, None, None)
-
-
-
-def generate_window(tickers):
-    app = QApplication(sys.argv)          # QApplication 객체 생성
-
-    # # 객체 생성
-    # label = QLabel("HelloObj")
-    # label.show()
-    #
-    # # 버튼 객체 생성
-    # btn = QPushButton("HelloBtn")
-    # btn.show()
-
-    # Window 생성
-    # window = MyWindowOld()
-    # window = MyWindowBull()
-    # window = MyWindowThread(tickers)
-    window = MyWindow()
-    window.show()
-
-    app.exec_()                         # 이벤트 루프 생성
+            return None, None, None
