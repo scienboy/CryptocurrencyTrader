@@ -3,10 +3,13 @@ from PyQt5 import uic
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from binance_test import *
+from PyQt5.QtCore import QMutex
+from .binance import *
 import pykorbit
 import pybithumb
 import time
+
+import src.settings
 # import datetime
 
 # This is a sample Python script.
@@ -183,12 +186,21 @@ class MySignal(QObject):
 
 class BithumbAPI():
     def __init__(self):
+        self.mutex = QMutex()
         pass
 
-    def parse_ohlcv(self, ticker, payment_currency="KRW", interval="day"):
-        return pybithumb.get_ohlcv(ticker, payment_currency, interval)
+    def parse_ohlcv(self, ticker, payment_currency="KRW", timeframe="1d"):
+        if timeframe == '1d':
+            timeframe = 'day'
+        return pybithumb.get_ohlcv(ticker, payment_currency, timeframe)
+
+    def add_api_parse_cnt(self):
+        self.mutex.lock()
+        src.settings.myList['api_parse_cnt_bithumb'] = src.settings.myList['api_parse_cnt_bithumb'] + 1
+        self.mutex.unlock()
 
     def parse_current_price(self, ticker):
+        self.add_api_parse_cnt()
         return pybithumb.get_current_price(ticker)
 
     def parse_detail(self):

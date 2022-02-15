@@ -2,10 +2,14 @@ import ccxt
 from datetime import datetime
 import pandas as pd
 import os
+from PyQt5.QtCore import QMutex
+
+import src.settings
 
 
 class BinanceAPI():
     def __init__(self):
+        self.mutex = QMutex()
         # # 기존 코드
         # self.binance = ccxt.binance
 
@@ -22,6 +26,31 @@ class BinanceAPI():
         })
 
         # self.get_ohlc_1m()
+
+    def add_api_parse_cnt(self):
+        self.mutex.lock()
+        src.settings.myList['api_parse_cnt_binance'] = src.settings.myList['api_parse_cnt_binance'] + 1
+        self.mutex.unlock()
+
+    def parse_ohlcv(self, ticker, payment_currency="USDT", timeframe="1d"):
+        self.add_api_parse_cnt()
+        symbol = str(ticker) + '/' + str(payment_currency)
+        ohlcv = pd.DataFrame(self.binance.fetch_ohlcv(symbol, timeframe))
+        ohlcv.columns = ['time', 'open', 'high', 'low', 'close', 'volume']
+        ohlcv['time'] = ohlcv.apply(self.get_time, axis=1)
+
+        return ohlcv
+
+
+
+
+    def parse_current_price(self, ticker):
+        self.add_api_parse_cnt()
+        input_ticker = str(ticker) + '/' + "USDT"
+        return self.binance.fetch_ticker(input_ticker)['close']
+
+
+
 
     def read_wallet_spot(self):
         return self.binance.fetch_balance()

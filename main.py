@@ -1,11 +1,4 @@
-from bithumb_data_parser import *
-from Tester import *
-from Analyzer import *
-from Analyzer_plot import *
-from binance_test import *
-from bithumb_test import *
-from coinmarketcap_api import *
-from Window_Dashboard import *
+from src.visualizers.Window_Dashboard import *
 
 # Press the green button in the gutter to run the script.
 
@@ -22,7 +15,6 @@ if __name__ == '__main__':
     # # 버튼 객체 생성
     # btn = QPushButton("HelloBtn")
     # btn.show()
-
 
     window = Window_Dashboard(tickers)          # 동작안함
     window.show()
@@ -73,3 +65,33 @@ if __name__ == '__main__':
 # # # 이평선 보고 ohlc 평균값으로 구매하는 알고리즘
 # # # 그 다음에 얼마 땃는지 확인
 
+
+
+
+
+
+
+# 엘리어트 파동이론
+# 볼륨
+# 추세
+# 지지
+# 저항
+# 패턴
+# 피보나치
+# RSI
+# 다이버전스
+# 이평선
+# 캔들
+
+
+#
+# 매매법
+#  차트분석 통해서 매수 이유를 명확히 찾기
+#  - 손절가 / 목표가 같이 설정해서 매매
+#
+# 손익비 생각
+#  -
+#
+# 최대한 좋은 자리 기다려야 함
+#  - 애매하면 절대 매매 하면 안됨
+#
