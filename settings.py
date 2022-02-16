@@ -1,6 +1,6 @@
 # settings.py
 
-def init():
+def initialize():
     global myList
     myList = {
         "api_parse_cnt_bithumb": 0,     # api_parse_cnt 산출을 위한 전역변수 셋업

@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
-from Window_Test import *
+from src.archives.Window_Test import *
 
 
 class Tester():

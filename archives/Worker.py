@@ -2,8 +2,8 @@ from PyQt5 import uic
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from Worker import *
-from Calculator import *
+from src.archives.Worker import *
+from src.archives.Calculator import *
 import pykorbit
 
 import time

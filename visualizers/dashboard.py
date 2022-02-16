@@ -1,22 +1,18 @@
-import datetime
-
 from src.threads.get_market_data import *
 from src.threads.get_wallet_data import *
+from src.visualizers.dashboard_dbgenerator import *
 
-from PyQt5.QtWidgets import *
-from PyQt5 import uic
+from datetime import *
 
 import src.settings
 
-form_class_old = uic.loadUiType("ui/1stDesign.ui")[0]
-form_class_bull = uic.loadUiType("ui/bull.ui")[0]
-form_class_myscreen = uic.loadUiType("ui/myScreen_01.ui")[0]
-# tickers = ["BTC", "ETH", "BCH", "ETC", "GALA"]
+# form_class_old = uic.loadUiType("ui/1stDesign.ui")[0]
+# form_class_bull = uic.loadUiType("ui/bull.ui")[0]
 
-class Window_Dashboard(QMainWindow, form_class_myscreen):
-    def __init__(self, tickers):
+class Dashboard(QMainWindow, uic.loadUiType("ui/dashboard.ui")[0]):
+    def __init__(self):
 
-        src.settings.init()     # api_parse_cnt 산출을 위한 전역변수 초기화
+        src.settings.initialize()     # api_parse_cnt 산출을 위한 전역변수 초기화
 
         super().__init__()
         self.setupUi(self)
@@ -29,11 +25,17 @@ class Window_Dashboard(QMainWindow, form_class_myscreen):
         self.worker_wallet.finished_labels.connect(self.update_labels_widget)
         self.worker_wallet.start()
 
-        self.pushButton_dbGenerator.clicked.connect(self.pushButton_dbGenerator_clicked)
+        # pushButton 기능 정의
+        self.pushButton_Initialize.clicked.connect(self.pushButton_Initialize_clicked)      # '초기화' 버튼 클릭 시 동작 정의
+        self.pushButton_dbGenerator.clicked.connect(self.pushButton_dbGenerator_clicked)    # 'DB Generator'버튼 클릭 시 동작
 
-        # '현재 잔고 조회' 버튼 클릭 시 동작 정의
-        self.pushButton_Initialize.clicked.connect(self.pushButton_Initialize_clicked)
-        # self.dbs
+        self.db_generator = dashboard_dbgenerator()     # 미리 second window 인스턴스를 생성해 두어야 순식간에 사라지지 않음. 만일 함수에 선언을 하게되면, 함수가 끝나자마자 윈도우가 사라져버림. 따라서 순식간에 사라지는것으로 인지.
+
+    def pushButton_dbGenerator_clicked(self):
+
+        print('DB generation 시작')
+        self.db_generator.show()
+        print('DB generation 종료')
 
 
     def thread_runner_table(self):
@@ -73,11 +75,6 @@ class Window_Dashboard(QMainWindow, form_class_myscreen):
 
         return 0
 
-    def pushButton_dbGenerator_clicked(self):
-        self.binance_api = BinanceAPI()
-
-        print('DB generation 시작')
-
 
     def update_table_row_widget(self, list):
         try:
@@ -95,7 +92,7 @@ class Window_Dashboard(QMainWindow, form_class_myscreen):
     def update_table_widget(self, data):
         try:
             for ticker, infos in data.items():
-                index = tickers.index(ticker)
+                # index = tickers.index(ticker)
 
                 self.tableWidget.setItem(index, 0, QTableWidgetItem(ticker))
                 self.tableWidget.setItem(index, 1, QTableWidgetItem(str(infos[0])))

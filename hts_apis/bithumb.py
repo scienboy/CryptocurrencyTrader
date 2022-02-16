@@ -20,7 +20,6 @@ import src.settings
 form_class_old = uic.loadUiType("ui/1stDesign.ui")[0]
 form_class_bull = uic.loadUiType("ui/bull.ui")[0]
 form_class_myscreen = uic.loadUiType("ui/myScreen_01.ui")[0]
-tickers = ["BTC", "ETH", "BCH", "ETC"]
 
 api_parse_cnt = 0
 
@@ -136,6 +135,7 @@ class MyWindowThread(QMainWindow, form_class_bull):
         except:
             pass
 
+
 class MyWindow_new(QMainWindow, form_class_myscreen):
     def __init__(self, tickers):
         super().__init__()
@@ -153,6 +153,7 @@ class MyWindow_new(QMainWindow, form_class_myscreen):
         self.worker.start()
 
         self.pushButton_01.clicked.connect(self.btn_clicked)
+
 
     def btn_clicked(self):
         print("버튼 클릭")

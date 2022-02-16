@@ -4,7 +4,7 @@ from PyQt5.QtGui import *
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import pandas_datareader.data as web
-from DB_Manager import *
+from src.dbs.db_manager import *
 import sqlite3
 import pandas as pd
 from pandas import Series, DataFrame

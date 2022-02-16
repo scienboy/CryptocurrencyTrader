@@ -1,38 +1,34 @@
-from src.visualizers.Window_Dashboard import *
+from src.visualizers.dashboard import *
 
-# Press the green button in the gutter to run the script.
+tickers = ["BTC", "ETH", "BCH", "ETC"]
+
+def run_dashboard():
+    # Window_Dashboard 관련 동작
+    app = QApplication(sys.argv)    # QApplication 객체 생성
+    window = Dashboard()
+    window.show()
+    app.exec_()
 
 
 if __name__ == '__main__':
     print('Program Started...')
 
-    app = QApplication(sys.argv)          # QApplication 객체 생성
-
-    # # 객체 생성
-    # label = QLabel("HelloObj")
-    # label.show()
-
-    # # 버튼 객체 생성
-    # btn = QPushButton("HelloBtn")
-    # btn.show()
-
-    window = Window_Dashboard(tickers)          # 동작안함
-    window.show()
-
-    app.exec_()                         # 이벤트 루프 생성
+    run_dashboard()      # Dashboard 관련 동작
 
 
+
+
+    # Bithumb = BithumbAPI()             # 클래스 생성
     # Bithumb.parse_detail()
     # Bithumb.parse_all()
     # market_classifier()
     # bull_operator()
+    # BithumbParser()       # Bithumb 정보 가져오기
 
-    # Bithumb = BithumbAPI()             # 클래스 생성
 
     # binance_api = BinanceAPI()
     # binance_api.generating_ohlcv_files(retry_cnt=1, root_dir='.\\data\\Binance_2105062146', quote='BTC')
 
-    # BithumbParser()       # Bithumb 정보 가져오기
 
     # test = Tester()
 
@@ -45,6 +41,7 @@ if __name__ == '__main__':
 
     # CoinmarketcapAPI()
     print('Program Ended...')
+
 
 
 # See PyCharm help at https://wWww.jetbrains.com/help/pycharm/
@@ -78,7 +75,7 @@ if __name__ == '__main__':
 # 저항
 # 패턴
 # 피보나치
-# RSI
+# RSI  - 과매수 과매도 지표
 # 다이버전스
 # 이평선
 # 캔들
@@ -95,3 +92,4 @@ if __name__ == '__main__':
 # 최대한 좋은 자리 기다려야 함
 #  - 애매하면 절대 매매 하면 안됨
 #
+

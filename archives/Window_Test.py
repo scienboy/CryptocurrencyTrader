@@ -4,9 +4,9 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
-from Worker import *
-from Window_Graph import *
-from DB_Manager import *
+from src.archives.Worker import *
+from src.archives.Window_Graph import *
+from src.dbs.db_manager import *
 
 ui_tester = uic.loadUiType("ui/Tester.ui")[0]
 
