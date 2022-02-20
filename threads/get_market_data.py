@@ -6,7 +6,7 @@ class Thread_get_market_data(QThread):
 
     finished_table_row = pyqtSignal(list)
 
-    def __init__(self, hts, currency, ticker, row):
+    def __init__(self, hts='Binance', currency='KRW', ticker='BTC', row=0):
         super().__init__()
         self.hts = hts
         self.ticker = ticker
@@ -14,10 +14,11 @@ class Thread_get_market_data(QThread):
         self.mutex = QMutex()
         self.currency = currency
 
-        if self.hts == 'bithumb':
-            self.hts_instance_bithumb = BithumbAPI()
-        elif self.hts == 'binance':
-            self.hts_instance_binance = BinanceAPI()
+
+        if self.hts == 'Bithumb':
+            self.hts_api = BithumbAPI()
+        elif self.hts == 'Binance':
+            self.hts_api = BinanceAPI()
 
     def run(self):
 
@@ -25,12 +26,12 @@ class Thread_get_market_data(QThread):
 
             time_init = datetime.now()
 
-            if self.hts == 'bithumb':
-                current_price = self.hts_instance_bithumb.parse_current_price(self.ticker)
-                ohlcv = self.hts_instance_bithumb.parse_ohlcv(self.ticker, self.currency, "1d")  # Bithumb KRW 기준
-            elif self.hts == 'binance':
-                current_price = self.hts_instance_binance.parse_current_price(self.ticker)
-                ohlcv = self.hts_instance_binance.parse_ohlcv(self.ticker, self.currency, "1d")    # Binance USD 기준
+            if self.hts == 'Bithumb':
+                current_price = self.hts_api.parse_current_price(self.ticker)
+                ohlcv = self.hts_api.parse_ohlcv(self.ticker, self.currency, "1d")  # Bithumb KRW 기준
+            elif self.hts == 'Binance':
+                current_price = self.hts_api.parse_current_price(self.ticker)
+                ohlcv = self.hts_api.parse_ohlcv(self.ticker, self.currency, "1d")    # Binance USD 기준
 
             time_end = datetime.now()
             duration = time_end - time_init
@@ -58,3 +59,4 @@ class Thread_get_market_data(QThread):
         except:
             print('wtf2')
             return None, None
+

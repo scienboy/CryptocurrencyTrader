@@ -46,6 +46,11 @@ if __name__ == '__main__':
 
 # See PyCharm help at https://wWww.jetbrains.com/help/pycharm/
 
+
+# SPOT과 Future 기준으로 table 나누어 구성하기
+# 분봉에 대해서 thread로 계속 가져오는 알고리즘 구현
+
+
 ## 해야 할 일들
 # 0. 구매하고, 파는 코드 짜보기
 # 1. 화면 구현해서 클릭하면 바로 구매하는 프로그램 짜기

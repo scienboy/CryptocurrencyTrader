@@ -1,5 +1,5 @@
 import ccxt
-from datetime import datetime
+from datetime import *
 import pandas as pd
 import os
 from PyQt5.QtCore import QMutex
@@ -8,24 +8,21 @@ import src.settings
 
 
 class BinanceAPI():
-    def __init__(self):
-        self.mutex = QMutex()
-        # # 기존 코드
-        # self.binance = ccxt.binance
-
-        # API key 조회
-        with open(".\\data\\Binance_API\\api.txt") as f:
+    def __init__(self, market='spot'):
+        self.mutex = QMutex()   # Thread의 동시 중복접근을 막기 위한 클래스
+        self.market = market
+        with open(".\\data\\Binance_API\\api.txt") as f:    # API key 조회
             lines = f.readlines()
             api_key = lines[0].strip()
             secret = lines[1].strip()
-
-        # API key를 통해 binance 객체생성
         self.binance = ccxt.binance(config={
             'apiKey': api_key,
-            'secret': secret
-        })
-
-        # self.get_ohlc_1m()
+            'secret': secret,
+            'options': {
+                'defaultType': market
+            }
+        })   # API key를 통해 binance 객체생성
+        self.timeframes = ['1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '3d', '1w', '1M']
 
     def add_api_parse_cnt(self):
         self.mutex.lock()
@@ -118,6 +115,7 @@ class BinanceAPI():
     def get_tickers(self):
         markets = self.binance.fetch_tickers()
         print(markets.keys())
+        return markets.keys()
 
     def get_ohlc_from_markets(self):
         markets = self.binance.fetch_tickers()
@@ -126,12 +124,24 @@ class BinanceAPI():
             ticker = self.binance.fetch_ticker(market)  # 전체 마켓 조회
             print(market, ticker['open'], ticker['high'], ticker['low'], ticker['close'])
 
+    def get_ohlcvs(self, symbol, timeframe):
+        ohlcvs = pd.DataFrame(self.binance.fetch_ohlcv(symbol, timeframe))
+        ohlcvs.columns = ['datetime', 'open', 'high', 'low', 'close', 'volume']
+        ohlcvs['datetime'] = pd.to_datetime(ohlcvs['datetime'], unit='ms') + timedelta(hours=9)
+        return ohlcvs
+
     def get_ohlc_1m(self):
         ohlcvs = self.binance.fetch_ohlcv('ETH/BTC', "1m")
         # print(ohlcvs)
         for ohlc in ohlcvs:
             print(datetime.fromtimestamp(ohlc[0]/1000).strftime('%Y-%m-%d %H:%M:%S'))
 
+    def asis_binance_validity(self, binance_newest_datetime):
+        now = datetime.now()
+        if binance_newest_datetime < now - timedelta(weeks=4):
+            return False
+        else:
+            return True
 
 
 

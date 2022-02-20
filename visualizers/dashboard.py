@@ -1,5 +1,6 @@
 from src.threads.get_market_data import *
 from src.threads.get_wallet_data import *
+from src.threads.store_market_data import *
 from src.visualizers.dashboard_dbgenerator import *
 
 from datetime import *
@@ -12,13 +13,13 @@ import src.settings
 class Dashboard(QMainWindow, uic.loadUiType("ui/dashboard.ui")[0]):
     def __init__(self):
 
-        src.settings.initialize()     # api_parse_cnt 산출을 위한 전역변수 초기화
+        src.settings.initialize()   # api_parse_cnt 산출을 위한 전역변수 초기화
 
         super().__init__()
         self.setupUi(self)
 
-        # symbol별 현재가/장세 조회
-        self.thread_runner_table()
+        # self.worker_store_ohlcv = store_market_data(self, hts_name='Binance')     # pushButton(Real-time ohlcv DB generation) 클릭 시 동작하는 DB저장관련 클래스 인스턴스 선언
+        self.table_threads_runner()                                         # symbol별 현재가/장세 조회하여 테이블에 내용 기록
 
         # 지갑 관련 정보 조회
         self.worker_wallet = Thread_get_wallet_data('USDT')
@@ -29,16 +30,24 @@ class Dashboard(QMainWindow, uic.loadUiType("ui/dashboard.ui")[0]):
         self.pushButton_Initialize.clicked.connect(self.pushButton_Initialize_clicked)      # '초기화' 버튼 클릭 시 동작 정의
         self.pushButton_dbGenerator.clicked.connect(self.pushButton_dbGenerator_clicked)    # 'DB Generator'버튼 클릭 시 동작
 
-        self.db_generator = dashboard_dbgenerator()     # 미리 second window 인스턴스를 생성해 두어야 순식간에 사라지지 않음. 만일 함수에 선언을 하게되면, 함수가 끝나자마자 윈도우가 사라져버림. 따라서 순식간에 사라지는것으로 인지.
+        # self.db_generator = dashboard_dbgenerator()     # 미리 second window 인스턴스를 생성해 두어야 순식간에 사라지지 않음. 만일 함수에 선언을 하게되면, 함수가 끝나자마자 윈도우가 사라져버림. 따라서 순식간에 사라지는것으로 인지.
+
+        self.pushButton_finish.clicked.connect(self.pushButton_finish_clicked)
+
+    def pushButton_finish_clicked(self):
+        self.worker_store_ohlcv.finish()
+
 
     def pushButton_dbGenerator_clicked(self):
-
         print('DB generation 시작')
-        self.db_generator.show()
+        self.worker_store_ohlcv = store_market_data(self, hts_name='Binance', symbols=['BTC/USDT'], timeframes=['1m'])     # pushButton(Real-time ohlcv DB generation) 클릭 시 동작하는 DB저장관련 클래스 인스턴스 선언
+        # self.worker_store_ohlcv.pushButton_parse_clicked()
+        self.worker_store_ohlcv.start()
+        # self.db_generator.show()
         print('DB generation 종료')
 
 
-    def thread_runner_table(self):
+    def table_threads_runner(self):
         hts_market = src.settings.myList['hts_market']
         hts_market_currency = src.settings.myList['hts_market_currency']
 
@@ -92,7 +101,7 @@ class Dashboard(QMainWindow, uic.loadUiType("ui/dashboard.ui")[0]):
     def update_table_widget(self, data):
         try:
             for ticker, infos in data.items():
-                # index = tickers.index(ticker)
+                index = data.items().index(ticker)
 
                 self.tableWidget.setItem(index, 0, QTableWidgetItem(ticker))
                 self.tableWidget.setItem(index, 1, QTableWidgetItem(str(infos[0])))
