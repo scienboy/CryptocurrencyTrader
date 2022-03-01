@@ -8,5 +8,5 @@ def initialize():
         "hts_wallet": 'Binance',
         "hts_market": 'Binance',        # (bithumb/binance) bithumb일 경우 KRW, binance는 USDT
         "hts_market_currency": 'USDT',   # (KRW/USDT)        bithumb일 경우 KRW, binance는 USDT
-        "mode": 'single'                # single / thread
+        "mode": 'thread'                # single / thread
     }

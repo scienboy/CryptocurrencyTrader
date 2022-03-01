@@ -11,7 +11,7 @@ class BinanceAPI():
     def __init__(self, market='spot'):
         self.mutex = QMutex()   # Thread의 동시 중복접근을 막기 위한 클래스
         self.market = market
-        with open(".\\data\\Binance_API\\api.txt") as f:    # API key 조회
+        with open("..\\data\\Binance_API\\api.txt") as f:    # API key 조회
             lines = f.readlines()
             api_key = lines[0].strip()
             secret = lines[1].strip()

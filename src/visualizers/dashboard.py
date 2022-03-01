@@ -10,7 +10,7 @@ import src.settings
 # form_class_old = uic.loadUiType("ui/1stDesign.ui")[0]
 # form_class_bull = uic.loadUiType("ui/bull.ui")[0]
 
-class Dashboard(QMainWindow, uic.loadUiType("ui/dashboard.ui")[0]):
+class Dashboard(QMainWindow, uic.loadUiType("../ui/dashboard.ui")[0]):
     def __init__(self):
 
         src.settings.initialize()   # api_parse_cnt 산출을 위한 전역변수 초기화

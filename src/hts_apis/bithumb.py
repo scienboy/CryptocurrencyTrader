@@ -17,9 +17,9 @@ import src.settings
 # Press Ctrl+F5 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
-form_class_old = uic.loadUiType("ui/1stDesign.ui")[0]
-form_class_bull = uic.loadUiType("ui/bull.ui")[0]
-form_class_myscreen = uic.loadUiType("ui/myScreen_01.ui")[0]
+form_class_old = uic.loadUiType("../ui/1stDesign.ui")[0]
+form_class_bull = uic.loadUiType("../ui/bull.ui")[0]
+form_class_myscreen = uic.loadUiType("../ui/myScreen_01.ui")[0]
 
 api_parse_cnt = 0
 
